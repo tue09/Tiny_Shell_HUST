@@ -24,34 +24,6 @@ HANDLE hHandless[100];
 int status[100];
 int numberProcess = 0;
 
-void executeCommand(const std::string& command, bool isBackground) {
-    STARTUPINFO si;
-    PROCESS_INFORMATION pi;
-
-    ZeroMemory(&si, sizeof(si));
-    si.cb = sizeof(si);
-    ZeroMemory(&pi, sizeof(pi));
-
-    char commandBuffer[MAX_BUFFER_SIZE];
-    strncpy_s(commandBuffer, command.c_str(), sizeof(commandBuffer));
-
-    if (CreateProcess(NULL, commandBuffer, NULL, NULL, FALSE,
-        isBackground ? CREATE_NEW_CONSOLE : 0, NULL, NULL, &si, &pi))
-    {
-        if (!isBackground)
-        {
-            WaitForSingleObject(pi.hProcess, INFINITE);
-        }
-
-        CloseHandle(pi.hProcess);
-        CloseHandle(pi.hThread);
-    }
-    else
-    {
-        std::cerr << "Failed to execute command: " << command << std::endl;
-    }
-}
-
 void help()
 {
 	std::cout <<"_______________________________________________________________________________________________"<<std::endl<<std::endl;
