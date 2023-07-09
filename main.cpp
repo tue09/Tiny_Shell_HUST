@@ -55,7 +55,7 @@ void updateTimeThread() {
         char timeString[100];
         std::strftime(timeString, sizeof(timeString), "%H:%M:%S", std::localtime(&currentTimeT));
 
-        std::cout << "\rCurrent time is: " << timeString << " | Enter to stop: ";
+        std::cout << "\rCurrent time is: " << timeString << " | Type to stop: ";
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
@@ -70,7 +70,7 @@ void updateDateThread() {
         char timeString[100];
         std::strftime(timeString, sizeof(timeString), "%Y-%m-%d", std::localtime(&currentTimeT));
 
-        std::cout << "\rCurrent date is: " << timeString << " | Enter to stop: ";
+        std::cout << "\rCurrent date is: " << timeString << " | Type to stop: ";
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
@@ -469,7 +469,7 @@ int main() {
     int spaces1 = (totalWidth - text1.length()) / 2;
     std::cout << std::setw(spaces1) << "" << text1 << std::setw(spaces1) << std::endl;
     std::cout << std::setw(spaces2) << "" << text2 << std::setw(spaces2) << std::endl;
-    std::cout<<std::endl<<"Enter 'help' to know how this shell work !!";
+    std::cout<<std::endl<<"Type 'help' to know how this shell work !!";
     while (true) {
         std::cout << "> ";
         std::getline(std::cin, command);
