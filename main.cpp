@@ -443,7 +443,7 @@ void processCommand(const std::string& command) {
     {
         std::cout<<"|   Welcome to Calendar   |";
         std::cout<<std::endl<<"//You want to know today or tomorrow or yesterday";
-        std::cout<<std::endl<<"//If you want to exit calendar, press 'out'";
+        std::cout<<std::endl<<"//If you want to exit calendar, type 'out'";
         while (true)
         {
             std::string cmt;
