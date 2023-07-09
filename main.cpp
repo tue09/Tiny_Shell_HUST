@@ -134,10 +134,12 @@ void ProcessinBackgroundMode(const std::string &process)
     status[numberProcess] = 1;
     SUInfo[numberProcess] = {sizeof(STARTUPINFO)};
     Processs[numberProcess];
-    ZeroMemory(&Processs[numberProcess], sizeof(SUInfo[numberProcess]));
-    SUInfo[numberProcess].cb = sizeof(SUInfo[numberProcess]);
     cString[numberProcess] = strdup(process.c_str());
-    if (!CreateProcess(cString[numberProcess], NULL, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &SUInfo[numberProcess], &Processs[numberProcess]))
+    STARTUPINFOA SUInfo[numberProcess];
+    ZeroMemory(&SUInfo[numberProcess], sizeof(SUInfo[numberProcess]));
+    SUInfo[numberProcess].cb = sizeof(SUInfo[numberProcess]);
+
+    if (!CreateProcessA(cString[numberProcess], NULL, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &SUInfo[numberProcess], &Processs[numberProcess]))
     {
         TerminateProcess(Processs[numberProcess].hProcess, 0);
         CloseHandle(Processs[numberProcess].hThread);
@@ -153,9 +155,10 @@ void ProcessinForegroundMode(const std::string &process)
     PROCESS_INFORMATION process1;
     STARTUPINFO SUinfo1 = {sizeof(STARTUPINFO)};
     LPSTR cStr1 = strdup(process.c_str());
-    ZeroMemory(SUInfo, sizeof(SUinfo1));
-    SUinfo1.cb = sizeof(SUinfo1);
-    if (!CreateProcess(cStr1, NULL, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, SUInfo, Processs))
+    STARTUPINFOA SUInfo[numberProcess];
+    ZeroMemory(&SUInfo[numberProcess], sizeof(SUInfo[numberProcess]));
+    SUInfo[numberProcess].cb = sizeof(SUInfo[numberProcess]);
+    if (!CreateProcessA(cStr1, NULL, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, SUInfo, Processs))
     {
         std::cout<<std::endl<<"Cannot open this file.";
         return;
@@ -288,7 +291,7 @@ void calendar(std::string command)
     week[4] = "Thursday";
     week[5] = "Friday";
     week[6] = "Saturday";
-    week[7] = "Sunday";
+    week[0] = "Sunday";
     std::time_t now = std::time(nullptr);
     std::tm* timeInfo = std::localtime(&now);
 
@@ -300,9 +303,9 @@ void calendar(std::string command)
     }
     else if (command == "tomorrow")
     {
-        if (dayOfWeek == 7)
+        if (dayOfWeek == 6)
         {
-            dayOfWeek = 1;
+            dayOfWeek = 0;
         }else{ dayOfWeek = dayOfWeek + 1; }
         std::cout<<"Tomorrow is: "<<week[dayOfWeek]<<std::endl;
     }
@@ -310,7 +313,7 @@ void calendar(std::string command)
     {
         if (dayOfWeek == 0)
         {
-            dayOfWeek = 7;
+            dayOfWeek = 6;
         }else{ dayOfWeek = dayOfWeek - 1; }
         std::cout<<"Yesterday is: "<<week[dayOfWeek]<<std::endl;
     }
@@ -366,7 +369,7 @@ void processCommand(const std::string& command) {
     }
     else if (tokens[0] == "addpath") {
         if (tokens.size() >= 2) {
-            if (SetEnvironmentVariable("PATH", tokens[1].c_str())) 
+            if (SetEnvironmentVariableA("PATH", tokens[1].c_str()))
             {
                 std::cout << "PATH set to: " << tokens[1] << std::endl;
             }
