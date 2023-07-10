@@ -23,7 +23,7 @@ LPSTR cString[100];
 HANDLE hHandless[100];
 int status[100];
 int numberProcess = 0;
-
+std::string currentDirectory = "";
 void help()
 {
 	std::cout <<"_______________________________________________________________________________________________"<<std::endl<<std::endl;
@@ -41,8 +41,10 @@ void help()
     std::cout << std::left << std::setw(35) << "9.  killall" << "kill all process " << std::endl;
     std::cout << std::left << std::setw(35) << "10. stop [process_id]" << "Stop process with id equal to [process_id] " << std::endl;
     std::cout << std::left << std::setw(35) << "11. resume [process_id]" << "Resume process with id equal to [process_id] " << std::endl;
-    std::cout << std::left << std::setw(35) << "12. [your_batch_file_name].bat" << "Excute [your_batch_file_name] " << std::endl;
-    std::cout << std::left << std::setw(35) << "13. calendar" << "You can determine which day of the week is today, tomorrow, or yesterday " << std::endl;
+    std::cout << std::left << std::setw(35) << "12. note fore" << "Open file 'Note.exe' in foreground mode " << std::endl;
+    std::cout << std::left << std::setw(35) << "13. note back" << "Open file 'Note.exe' in background mode " << std::endl;
+    std::cout << std::left << std::setw(35) << "14. [your_batch_file_name].bat" << "Excute [your_batch_file_name] " << std::endl;
+    std::cout << std::left << std::setw(35) << "15. calendar" << "You can determine which day of the week is today, tomorrow, or yesterday " << std::endl;
     std::cout<<"_______________________________________________________________________________________________"<<std::endl;
 }
 
@@ -129,16 +131,14 @@ void killAll()
 
 void ProcessinBackgroundMode(const std::string &process)
 {
-    killp(process);
+    void killp(std::string process);
     numberProcess = numberProcess + 1;
     status[numberProcess] = 1;
     SUInfo[numberProcess] = {sizeof(STARTUPINFO)};
     Processs[numberProcess];
-    cString[numberProcess] = strdup(process.c_str());
-    STARTUPINFOA SUInfo[numberProcess];
     ZeroMemory(&SUInfo[numberProcess], sizeof(SUInfo[numberProcess]));
     SUInfo[numberProcess].cb = sizeof(SUInfo[numberProcess]);
-
+    cString[numberProcess] = strdup(process.c_str());
     if (!CreateProcessA(cString[numberProcess], NULL, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, &SUInfo[numberProcess], &Processs[numberProcess]))
     {
         TerminateProcess(Processs[numberProcess].hProcess, 0);
@@ -170,8 +170,6 @@ void ProcessinForegroundMode(const std::string &process)
 
 void ProcessBackgroundOrForeground(const std::string &command, const std::string &process)
 {
-    ProcessinForegroundMode(process);
-    ProcessinBackgroundMode(process);
     std::stringstream cou (command);
     std::string cou1, cou2;
     cou >> cou1;
@@ -218,7 +216,7 @@ void showList()
         else
         {
             const char *temp = (status[i] == 0) ? "stopping" : "Running ";
-            std::cout<<i<<Processs[i].dwProcessId, Processs[i].hProcess, temp, cString[i];
+            std::cout<<i<<" | "<<Processs[i].dwProcessId<<" | "<< Processs[i].hProcess<<" | "<<temp<<" | "<<cString[i]<<std::endl;
         }
     }
     std::cout<<std::endl;
@@ -441,6 +439,11 @@ void processCommand(const std::string& command) {
             processCommand(line);
         }
         file.close();
+    }
+    else if (tokens[1].compare("fore") == 0 || tokens[1].compare("back") == 0)
+    {
+            std::string s = "C:\\Windows\\System32\\notepad.exe";
+            ProcessBackgroundOrForeground(command, s);
     }
     else if (tokens[0] == "calendar")
     {
