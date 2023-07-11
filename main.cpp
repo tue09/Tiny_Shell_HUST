@@ -41,8 +41,8 @@ void help()
     std::cout << std::left << std::setw(35) << "9.  killall" << "kill all process " << std::endl;
     std::cout << std::left << std::setw(35) << "10. stop [process_id]" << "Stop process with id equal to [process_id] " << std::endl;
     std::cout << std::left << std::setw(35) << "11. resume [process_id]" << "Resume process with id equal to [process_id] " << std::endl;
-    std::cout << std::left << std::setw(35) << "12. note fore" << "Open file 'Note.exe' in foreground mode " << std::endl;
-    std::cout << std::left << std::setw(35) << "13. note back" << "Open file 'Note.exe' in background mode " << std::endl;
+    std::cout << std::left << std::setw(35) << "12. notepad fore" << "Open file 'Note.exe' in foreground mode " << std::endl;
+    std::cout << std::left << std::setw(35) << "13. notepad back" << "Open file 'Note.exe' in background mode " << std::endl;
     std::cout << std::left << std::setw(35) << "14. [your_batch_file_name].bat" << "Excute [your_batch_file_name] " << std::endl;
     std::cout << std::left << std::setw(35) << "15. calendar" << "You can determine which day of the week is today, tomorrow, or yesterday " << std::endl;
     std::cout<<"_______________________________________________________________________________________________"<<std::endl;
@@ -440,11 +440,13 @@ void processCommand(const std::string& command) {
         }
         file.close();
     }
-    else if (tokens[1].compare("fore") == 0 || tokens[1].compare("back") == 0)
+    
+    else if ((tokens[0].compare("note") == 0) and (tokens[1].compare("fore") == 0 || tokens[1].compare("back") == 0))
     {
             std::string s = "C:\\Windows\\System32\\notepad.exe";
             ProcessBackgroundOrForeground(command, s);
     }
+    
     else if (tokens[0] == "calendar")
     {
         std::cout<<"|   Welcome to Calendar   |";
