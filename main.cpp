@@ -41,10 +41,12 @@ void help()
     std::cout << std::left << std::setw(35) << "9.  killall" << "kill all process " << std::endl;
     std::cout << std::left << std::setw(35) << "10. stop [process_id]" << "Stop process with id equal to [process_id] " << std::endl;
     std::cout << std::left << std::setw(35) << "11. resume [process_id]" << "Resume process with id equal to [process_id] " << std::endl;
-    std::cout << std::left << std::setw(35) << "12. hello fore" << "Open file 'hello.exe' in foreground mode " << std::endl;
-    std::cout << std::left << std::setw(35) << "13. hello back" << "Open file 'hello.exe' in background mode " << std::endl;
-    std::cout << std::left << std::setw(35) << "14. [your_batch_file_name].bat" << "Excute [your_batch_file_name] " << std::endl;
-    std::cout << std::left << std::setw(35) << "15. calendar" << "You can determine which day of the week is today, tomorrow, or yesterday " << std::endl;
+    std::cout << std::left << std::setw(35) << "12. [your_file_name.exe] fore" << "Open file 'your_file_name.exe' in foreground mode " << std::endl;
+    std::cout << std::left << std::setw(35) << "13. [your_file_name.exe] back" << "Open file 'your_file_name.exe' in background mode " << std::endl;
+    std::cout << std::left << std::setw(35) << "14. [your_file_name.exe] " << "Open file 'your_file_name.exe' in background mode " << std::endl;
+    std::cout << std::left << std::setw(35) << "15. [your_batch_file_name].bat" << "Excute [your_batch_file_name] " << std::endl;
+    std::cout << std::left << std::setw(35) << "16. cls" << "Clear Screen " << std::endl;
+    std::cout << std::left << std::setw(35) << "17. calendar" << "You can determine which day of the week is today, tomorrow, or yesterday " << std::endl;
     std::cout<<"_______________________________________________________________________________________________"<<std::endl;
 }
 
@@ -88,36 +90,6 @@ void dir2()
     }
 }
 
-// void killp(std::string process)
-// {
-//     int id = std::atoi(process.c_str());
-//     bool flag = true;
-//     for (int i = 1; i <= numberProcess; i++)
-//     {
-//         if (Processs[i].dwProcessId == id)
-//         {
-//             TerminateProcess(Processs[i].hProcess, 0);
-//             CloseHandle(Processs[i].hThread);
-//             CloseHandle(Processs[i].hProcess);
-
-//             std::cout<<"Process "<<cString[i]<< " is killed"<<std::endl;
-//             for (int j = i; j < numberProcess; j++)
-//             {
-//                 status[j] = status[j+1];
-//                 Processs[j] = Processs[j+1];
-//                 SUInfo[j] = SUInfo[j+1];
-//                 cString[j] = cString[j+1];
-//             }
-//             numberProcess = numberProcess - 1;
-//             flag = false;
-//         }
-//     }
-//     if (flag)
-//     {
-//         std::cout<<std::endl<<"Cannot find this process with id = "<<id;
-//     }
-// }
-
 void kill(int id) {
     HANDLE hProcess = OpenProcess(PROCESS_TERMINATE, FALSE, id);
 
@@ -134,7 +106,6 @@ void kill(int id) {
 
 void ProcessinBackgroundMode(const std::string &process)
 {
-    void killp(std::string process);
     numberProcess = numberProcess + 1;
     status[numberProcess] = 1;
     SUInfo[numberProcess] = {sizeof(STARTUPINFO)};
@@ -153,37 +124,33 @@ void ProcessinBackgroundMode(const std::string &process)
     }
 }
 
+void clearScreen()
+{
+#ifdef _WIN32
+    // Lệnh cls để xóa màn hình trong Windows
+    std::system("cls");
+#else
+    // Lệnh clear để xóa màn hình trong Linux và macOS
+    std::system("clear");
+#endif
+}
+
 void addPath(std::string new_value, std::string variable) { 
 	HKEY hkey;
     long regOpenResult;
     const char key_name[] = "Environment";
 
-    const char *path=new_value.c_str();//new_value path need to update 
+    const char *path=new_value.c_str();
 
     regOpenResult = RegOpenKeyEx(HKEY_CURRENT_USER,key_name, 0, KEY_ALL_ACCESS, &hkey);
 
-    LPCSTR stuff = variable.c_str();                                                   //Variable Name 
+    LPCSTR stuff = variable.c_str();                                      
     RegSetValueEx(hkey,stuff,0,REG_SZ,(BYTE*) path, strlen(path));
     RegCloseKey(hkey);
 
 }
-//C:\Users\ADMIN\.matplotlib
 void ProcessinForegroundMode(const std::string &process)
 {
-    // PROCESS_INFORMATION process1;
-    // STARTUPINFO SUinfo1 = {sizeof(STARTUPINFO)};
-    // LPSTR cStr1 = strdup(process.c_str());
-    // // STARTUPINFOA 
-    // SUInfo[numberProcess];
-    // ZeroMemory(&SUInfo[numberProcess], sizeof(SUInfo[numberProcess]));
-    // SUInfo[numberProcess].cb = sizeof(SUInfo[numberProcess]);
-    // if (!CreateProcessA(cStr1, NULL, NULL, NULL, FALSE, CREATE_NEW_CONSOLE, NULL, NULL, SUInfo, Processs))
-    // {
-    //     std::cout<<std::endl<<"Cannot open this file.";
-    //     return;
-    // }
-//test
-    void killp(std::string process);
     numberProcess = numberProcess + 1;
     status[numberProcess] = 1;
     SUInfo[numberProcess] = {sizeof(STARTUPINFO)};
@@ -201,12 +168,6 @@ void ProcessinForegroundMode(const std::string &process)
         return;
     }
     WaitForSingleObject(Processs[numberProcess].hProcess, INFINITE);
-    // CloseHandle(process.hThread);
-    // CloseHandle(process.hProcess);
-//test end
-    // WaitForSingleObject(process1.hProcess, INFINITE);
-    // CloseHandle(process1.hThread);
-    // CloseHandle(process1.hProcess);
 }
 
 void ProcessBackgroundOrForeground(const std::string &command, const std::string &process)
@@ -504,7 +465,7 @@ void processCommand(const std::string& command) {
             ProcessBackgroundOrForeground(command, s);
     }
 //test
-    else if (tokens[0].compare("hello.exe") == 0)
+    else if (tokens[0].find(".exe") != std::string::npos)
     {
         if (tokens.size() == 1)
         {
@@ -513,7 +474,7 @@ void processCommand(const std::string& command) {
         }
         else if (tokens[1].compare("fore") == 0 || tokens[1].compare("back") == 0)
         {
-            std::string s = "hello.exe";
+            std::string s = tokens[0];
             ProcessBackgroundOrForeground(command, s);
         }
         else
@@ -521,7 +482,12 @@ void processCommand(const std::string& command) {
             std::cout<<"Wrong";
         }
     }
-//test end    
+
+    else if ((tokens[0] == "cls") or (tokens[0] == "clear"))
+    {
+        clearScreen();
+    }
+
     else if (tokens[0] == "calendar")
     {
         std::cout<<"|   Welcome to Calendar   |";
